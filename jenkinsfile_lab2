@@ -1,0 +1,78 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = 'my-node-app'
+        CONTAINER_NAME = 'node-app'
+        REPO_URL = 'https://github.com/malkiAbdelhamid/lab4_jenkins'
+        BRANCH = 'master' // or any branch you want to track
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Check out the latest code from the repository
+                git branch: "${BRANCH}", url: "${REPO_URL}"
+            }
+        }
+     
+     	stage("Install dependencies "){
+			steps{
+				bat "npm install"
+			}
+     	}
+		stage("Test"){
+			steps{
+			 // Run tests and save output to a file
+                script {
+                // Run the tests and capture the output
+                    def testResult = bat(script: "npm test", returnStatus: true)
+                    // Check if the tests passed
+                    if (testResult != 0) {
+                        error("Tests failed!")
+                    }
+			}
+		}
+		}
+     stage ("Build"){
+
+            steps{
+                bat 'npm run build'
+            }
+
+        }
+        stage('Build Docker Image') {
+            steps {
+                
+                    // Build the Docker image
+                    bat "docker build -t ${IMAGE_NAME} ."
+                
+            }
+        }
+    stage('Stop Existing Container') {
+            steps {
+                script {
+                   
+                        bat "docker-compose down"
+                   
+                }
+            }
+        }
+
+        stage('Run New Container') {
+            steps {
+                script {
+                    // Run the new container
+                    bat "docker-compose up -d"
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // Clean up workspace after the pipeline finishes
+            cleanWs()
+        }
+    }
+}
