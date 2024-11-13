@@ -8,7 +8,7 @@ app.use(express.json());
 let books = [
   { id: 1, title: 'The Great Gatsby', author: 'F. Scott Fkkkkkkitzgerald' },
   { id: 2, title: '1984', author: 'George Orwell' }
-  ,{ id: 3, title: 'To Kill a Mockingbird', author: 'Ahmed BENARIBA' }
+  ,{ id: 3, title: 'To Kill a Mockingbird', author: 'Ahmed BENA666RIBA' }
 ];
 
 // Define routes (same as before)
